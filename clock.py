@@ -183,8 +183,8 @@ entry_seconds = ttk.Entry(timer, textvariable=seconds_value, width=5)
 entry_seconds.pack()
 ttk.Label(timer, text="SEC").pack()
 
-bruh = ttk.Label(timer, text="00:00:00", font=("courier", 15))
-bruh.pack()
+timer_label = ttk.Label(timer, text="00:00:00", font=("courier", 15))
+timer_label.pack()
 
     #countdown
 def ready_entry_box_hours(event):
@@ -238,7 +238,7 @@ def start_countdown(total_secs=None):# i used total_Secs = None because i dont k
             mins, secs = divmod(total_secs, 60)
             hours, mins = divmod(mins, 60)
             fuck = "{:02d}:{:02d}:{:02d}".format(hours, mins, secs)
-            bruh.config(text=fuck)
+            timer_label.config(text=fuck)
             totalSecs_timer = total_secs
             pause_timer = displayTimeRoot.after(1000, start_countdown, total_secs-1)
         if total_secs==0:
@@ -264,7 +264,7 @@ def continue_countdown(totalSecs_timer_holder=None):
         mins, secs = divmod(totalSecs_timer_holder, 60)
         hours, mins = divmod(mins, 60)
         fuck = "{:02d}:{:02d}:{:02d}".format(hours, mins, secs)
-        bruh.config(text=fuck)
+        timer_label.config(text=fuck)
         pause_timer = displayTimeRoot.after(1000, start_countdown, totalSecs_timer_holder-1)
     if totalSecs_timer_holder==0:
         print("done")
@@ -274,7 +274,16 @@ def reset_timer():
     hours_value.set(0)
     mins_value.set(0)
     seconds_value.set(0)
-    
+
+    entry_hours.state(['!disabled'])
+    entry_mins.state(['!disabled'])
+    entry_seconds.state(['!disabled'])
+    start_timer_button.state(['!disabled'])
+    continue_timer_button.state(['disabled'])
+    stop_timer_button.state(['disabled'])
+
+    timer_label.config(text="00:00:00")
+
 
 continue_timer_button = ttk.Button(timer, text="continue", command=continue_countdown)
 continue_timer_button.pack()
