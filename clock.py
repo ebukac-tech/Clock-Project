@@ -166,7 +166,7 @@ stop_stopwatch_button.state(['disabled'])
 #TIMER
     #display
 description = ttk.Label(timer, text="TIMER SECTION")
-description.pack()
+description.pack(pady=10)
 
 hours_value = IntVar()
 entry_hours = ttk.Entry(timer, textvariable=hours_value, width=5)
@@ -221,15 +221,14 @@ entry_mins.bind("<FocusOut>", conclude_entry_box_mins)
 entry_seconds.bind("<FocusIn>", ready_entry_box_seconds)
 entry_seconds.bind("<FocusOut>", conclude_entry_box_seconds)
 
-def start_countdown(total_secs=None):# i used total_Secs = None because i dont know the start value
+def start_timer(total_secs=None):# i used total_Secs = None because i dont know the start value
     if seconds_value.get()==0 and mins_value.get()==0 and hours_value.get()==0:
         pass
     else:
-        start_timer_button.state(['disabled'])
-        stop_timer_button.state(['!disabled'])
         entry_hours.state(['disabled'])
         entry_mins.state(['disabled'])
         entry_seconds.state(['disabled'])
+        start_timer_button.config(text="stop", command=stop_timer)
         global pause_timer, totalSecs_timer
         if total_secs ==None:
             hours, mins, seconds = int(hours_value.get()), int(mins_value.get()), int(seconds_value.get())
@@ -240,21 +239,21 @@ def start_countdown(total_secs=None):# i used total_Secs = None because i dont k
             fuck = "{:02d}:{:02d}:{:02d}".format(hours, mins, secs)
             timer_label.config(text=fuck)
             totalSecs_timer = total_secs
-            pause_timer = displayTimeRoot.after(1000, start_countdown, total_secs-1)
+            pause_timer = displayTimeRoot.after(1000, start_timer, total_secs-1)
+
         if total_secs==0:
             print("done")
     
             start_timer_button.state(['!disabled'])
         #sound-playing stuff
 
-def stop_countdown():
-    continue_timer_button.state(['!disabled'])
-    stop_timer_button.state(['disabled'])
+def stop_timer():
     displayTimeRoot.after_cancel(pause_timer)
+    start_timer_button.config(text="continue", command=continue_timer)
+    
 
-def continue_countdown(totalSecs_timer_holder=None):
-    continue_timer_button.state(['disabled'])
-    stop_timer_button.state(['!disabled'])
+def continue_timer(totalSecs_timer_holder=None):
+    start_timer_button.config(text="stop", command=stop_timer)
     global totalSecs_timer
     totalSecs_timer_holder=totalSecs_timer
     if totalSecs_timer_holder ==None:
@@ -265,7 +264,7 @@ def continue_countdown(totalSecs_timer_holder=None):
         hours, mins = divmod(mins, 60)
         fuck = "{:02d}:{:02d}:{:02d}".format(hours, mins, secs)
         timer_label.config(text=fuck)
-        pause_timer = displayTimeRoot.after(1000, start_countdown, totalSecs_timer_holder-1)
+        pause_timer = displayTimeRoot.after(1000, start_timer, totalSecs_timer_holder-1)
     if totalSecs_timer_holder==0:
         print("done")
         start_timer_button.state(['!disabled'])
@@ -279,21 +278,12 @@ def reset_timer():
     entry_mins.state(['!disabled'])
     entry_seconds.state(['!disabled'])
     start_timer_button.state(['!disabled'])
-    continue_timer_button.state(['disabled'])
-    stop_timer_button.state(['disabled'])
+    start_timer_button.config(text="Start", command=start_timer)
 
     timer_label.config(text="00:00:00")
 
 
-continue_timer_button = ttk.Button(timer, text="continue", command=continue_countdown)
-continue_timer_button.pack()
-continue_timer_button.state(['disabled'])
-
-stop_timer_button = ttk.Button(timer, text="stop", command=stop_countdown)
-stop_timer_button.pack()
-stop_timer_button.state(['disabled'])
-
-start_timer_button = ttk.Button(timer, text="Start", command=start_countdown)
+start_timer_button = ttk.Button(timer, text="Start", command=start_timer)
 start_timer_button.pack()
 
 reset_timer_button = ttk.Button(timer, text="Reset", command=reset_timer)
