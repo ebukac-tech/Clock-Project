@@ -289,4 +289,6 @@ reset_timer_button.place(relx=0.5, rely=0.9, anchor="center")
 #ALARM
 ttk.Label(alarm, text="This is the alarm section").pack()
 
+print("this is testing")
+
 root.mainloop()
