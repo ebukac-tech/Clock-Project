@@ -8,7 +8,8 @@ time_object = time.localtime()
 
 root = Tk()
 root.title("Ebuka's Clock")
-root.resizable(width=0, height=0)
+icon = PhotoImage(file="icon3.png")
+root.iconphoto(False, icon)
 
 display_notebook = ttk.Notebook(root, padding=10)
 world_clock = ttk.Frame(display_notebook)
@@ -228,9 +229,9 @@ def start_timer(total_secs=None):# i used total_Secs = None because i dont know 
             timer_label.config(text=fuck)
             totalSecs_timer = total_secs
             if reset_timer_button.instate(['pressed']):
-                pause_timer = root.after(1000, reset_timer)
+                pause_timer = root.after(100, reset_timer)
             else:
-                pause_timer = root.after(1000, start_timer, total_secs-1)
+                pause_timer = root.after(100, reset_timer)
 
         if total_secs==0:
             print("done")
