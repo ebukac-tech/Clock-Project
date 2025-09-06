@@ -195,13 +195,11 @@ def start_timer(total_secs=None):# i used total_Secs = None because i dont know 
             pass
     except TclError:
         hours_value.set(0)
-
     try:
         if mins_value.get()==0:
             pass
     except TclError:
         mins_value.set(0)
-
     try:
         if seconds_value.get()==0:
             pass
@@ -229,9 +227,9 @@ def start_timer(total_secs=None):# i used total_Secs = None because i dont know 
             timer_label.config(text=fuck)
             totalSecs_timer = total_secs
             if reset_timer_button.instate(['pressed']):
-                pause_timer = root.after(100, reset_timer)
+                pause_timer = root.after(1000, reset_timer)
             else:
-                pause_timer = root.after(100, reset_timer)
+                pause_timer = root.after(1000, reset_timer)
 
         if total_secs==0:
             print("done")
