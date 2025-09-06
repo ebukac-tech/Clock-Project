@@ -102,53 +102,76 @@ stop_stopwatch_button.state(['disabled'])
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>TIMER<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    #display
+#display
 description = ttk.Label(timer, text="TIMER SECTION")
-description.pack(pady=10)
+description.place(relx=0.5, rely=0.3, anchor="center")
 
 timer_label = ttk.Label(timer, text="00:00:00", font=("courier", 15))
-#timer_label.place(relx=0.5, rely=0.5, anchor="center")
 
 hours_value = IntVar()
-entry_hours = ttk.Entry(timer, textvariable=hours_value, width=5)
+hours_value.set("HRS")
+entry_hours = ttk.Entry(timer, textvariable=hours_value, width=5, foreground="#808080")
 entry_hours.place(relx=0.3, rely=0.5, anchor="center")
 ttk.Label(timer, text="HRS").place()
 
 mins_value = IntVar()
-entry_mins= ttk.Entry(timer, textvariable=mins_value, width=5)
+mins_value.set("MINS")
+entry_mins= ttk.Entry(timer, textvariable=mins_value, width=5, foreground="#808080")
 entry_mins.place(relx=0.5, rely=0.5, anchor="center")
 ttk.Label(timer, text="MINS").place()
 
 seconds_value = IntVar()
-entry_seconds = ttk.Entry(timer, textvariable=seconds_value, width=5)
+seconds_value.set("SECS")
+entry_seconds = ttk.Entry(timer, textvariable=seconds_value, width=5, foreground="#808080")
 entry_seconds.place(relx=0.7, rely=0.5, anchor="center")
 ttk.Label(timer, text="SEC").place()
 
-    #countdown
+#optimise clicking in and out of entry boxes
 def ready_entry_box_hours(event):
-    hours_value.set("")
+    try: #switches to empty string to allow user enter time
+        if hours_value.get() == "HRS":
+            hours_value.set("")
+            entry_hours.config(foreground="black")
+    except TclError:
+        hours_value.set("")
+        entry_hours.config(foreground="black")
 def conclude_entry_box_hours(event):
-    try:
-        if hours_value.get()=="":
+    try:# when user clicks out it switches back to place holder
+        if hours_value.get()=="": 
             hours_value.set(0)
     except TclError:
-        hours_value.set(0)
+        hours_value.set("HRS")
+        entry_hours.config(foreground="#808080")
 def ready_entry_box_mins(event):
-    mins_value.set("")
+    try:
+        if mins_value.get() == "MINS":
+            mins_value.set("")
+            entry_mins.config(foreground="black")
+    except TclError:
+        mins_value.set("")
+        entry_mins.config(foreground="black")
 def conclude_entry_box_mins(event):
     try:
         if mins_value.get()=="":
             mins_value.set(0)
     except TclError:
-        mins_value.set(0)
+        mins_value.set("MINS")
+        entry_mins.config(foreground="#808080")
 def ready_entry_box_seconds(event):
-    seconds_value.set("")
+    try:
+        if seconds_value.get()=="SECS":
+            seconds_value.set("")
+            entry_seconds.config(foreground="black")
+    except TclError:
+        seconds_value.set("")
+        entry_seconds.config(foreground="black")
 def conclude_entry_box_seconds(event):
     try:
         if seconds_value.get()=="":
             seconds_value.set(0)
     except TclError:
-        seconds_value.set(0)
+        seconds_value.set("SECS")
+        entry_seconds.config(foreground="#808080")
 
 entry_hours.bind("<FocusIn>", ready_entry_box_hours)
 entry_hours.bind("<FocusOut>", conclude_entry_box_hours)
@@ -159,16 +182,39 @@ entry_mins.bind("<FocusOut>", conclude_entry_box_mins)
 entry_seconds.bind("<FocusIn>", ready_entry_box_seconds)
 entry_seconds.bind("<FocusOut>", conclude_entry_box_seconds)
 
+#functions for starting, stopping and resetting the timer
 def start_timer(total_secs=None):# i used total_Secs = None because i dont know the start value
     timer_label.place(relx=0.5, rely=0.5, anchor="center")
     entry_seconds.place_forget()
     entry_hours.place_forget()
     entry_mins.place_forget()
-    #if reset_timer_button.instate(['pressed']):
-            #reset_timer()
+
+    try:
+        if hours_value.get()==0:
+            pass
+    except TclError:
+        hours_value.set(0)
+
+    try:
+        if mins_value.get()==0:
+            pass
+    except TclError:
+        mins_value.set(0)
+
+    try:
+        if seconds_value.get()==0:
+            pass
+    except TclError:
+        seconds_value.set(0)
 
     if seconds_value.get()==0 and mins_value.get()==0 and hours_value.get()==0:
-        pass
+        timer_label.place_forget()
+        hours_value.set("HRS")
+        mins_value.set("MINS")
+        seconds_value.set("SECS")
+        entry_hours.place(relx=0.3, rely=0.5, anchor="center")
+        entry_seconds.place(relx=0.7, rely=0.5, anchor="center")
+        entry_mins.place(relx=0.5, rely=0.5, anchor="center")
     else:
         start_timer_button.config(text="STOP", command=stop_timer)
         global pause_timer, totalSecs_timer
@@ -220,15 +266,19 @@ def reset_timer():
     entry_seconds.place(relx=0.7, rely=0.5, anchor="center")
     entry_mins.place(relx=0.5, rely=0.5, anchor="center")
 
-    hours_value.set(0)
-    mins_value.set(0)
-    seconds_value.set(0)
+    hours_value.set("HRS")
+    mins_value.set("MINS")
+    seconds_value.set("SECS")
+
+    #change color to placeholder color
+    entry_seconds.config(foreground="#808080")
+    entry_mins.config(foreground="#808080")
+    entry_hours.config(foreground="#808080")
 
     start_timer_button.config(text="START", command=start_timer)
 
-    #timer_label.config(text="00:00:00")
 
-
+#Buttons - timer
 start_timer_button = ttk.Button(timer, text="START", command=start_timer)
 start_timer_button.place(relx=0.5, rely=0.7, anchor="center")
 
