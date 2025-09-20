@@ -2,7 +2,11 @@ import time
 from tkinter import *
 from tkinter import ttk
 
-#Button functions
+#------------------------------------------
+#TIMER FUNCTIONS
+#------------------------------------------
+
+#start button, stop button
 def startTimer():
     # display the necessary widgets
     hrs_entryBox.place_forget()
@@ -11,10 +15,65 @@ def startTimer():
     label2.place_forget()
     secs_entryBox.place_forget()
     timerLabel.place(relx=0.5, rely=0.4, anchor='center')
+    #get values
+    if hrs_entryBox.get().isnumeric():
+        hrs_value = int(hrs_entryBox.get())
+    else:
+        hrs_value=0
+    if mins_entryBox.get().isnumeric():
+        mins_value = int(mins_entryBox.get())
+    else:
+        mins_value=0
+    if secs_entryBox.get().isnumeric():
+        secs_value = int(secs_entryBox.get())
+    else:
+        secs_value=0
 
-    #start countdown
+
+#re-insert placeholders of entry box when out of focus
+def putHrs(event):
+    if hrs_entryBox.get().isnumeric():
+        pass
+    else:
+        hrs_entryBox.insert(0, "HRS")
+        hrs_entryBox.config(foreground='gray')
+
+def putMins(event):
+    if mins_entryBox.get().isnumeric():
+        pass
+    else:
+        mins_entryBox.insert(0, "MINS")
+        mins_entryBox.config(foreground='gray')
+
+def putSecs(event):
+    if secs_entryBox.get().isnumeric():
+        pass
+    else:
+        secs_entryBox.insert(0, "SECS")
+        secs_entryBox.config(foreground='gray')
 
 
+#clear placeholders when clicked
+def remove_hrs(event):
+    if hrs_entryBox.get().isnumeric():
+        pass
+    else:
+        hrs_entryBox.delete(0, END)
+    hrs_entryBox.config(foreground='black')
+
+def remove_mins(event):
+    if mins_entryBox.get().isnumeric():
+        pass
+    else:
+        mins_entryBox.delete(0, END)
+    mins_entryBox.config(foreground='black')
+
+def remove_seconds(event):
+    if secs_entryBox.get().isnumeric():
+        pass
+    else:
+        secs_entryBox.delete(0, END)
+    secs_entryBox.config(foreground='black')
 
 
 #window init
@@ -23,6 +82,7 @@ root.title("Ebuka's Clock")
 window_height = 250
 window_width = 350
 root.geometry(f"{window_width}x{window_height}")
+root.resizable(False, False)
 
 notebook = ttk.Notebook(root, padding=10)
 #make frames
@@ -60,55 +120,12 @@ secs_entryBox = ttk.Entry(timer, foreground="gray", font=("Arial", 20), width=5)
 secs_entryBox.place(relx=0.8, rely=0.4, anchor="center")
 secs_entryBox.insert(0, "SECS")
 
-
-#clear placeholders when clicked
-def remove_hrs(event):
-    if hrs_entryBox.get().isnumeric():
-        pass
-    else:
-        hrs_entryBox.delete(0, END)
-    hrs_entryBox.config(foreground='black')
-
-def remove_mins(event):
-    if mins_entryBox.get().isnumeric():
-        pass
-    else:
-        mins_entryBox.delete(0, END)
-    mins_entryBox.config(foreground='black')
-
-def remove_seconds(event):
-    if secs_entryBox.get().isnumeric():
-        pass
-    else:
-        secs_entryBox.delete(0, END)
-    secs_entryBox.config(foreground='black')
-
+#clear placeholders
 hrs_entryBox.bind("<FocusIn>", remove_hrs)
 mins_entryBox.bind("<FocusIn>", remove_mins)
 secs_entryBox.bind("<FocusIn>", remove_seconds)
 
-#re-insert placeholders when out of focus
-def putHrs(event):
-    if hrs_entryBox.get().isnumeric():
-        pass
-    else:
-        hrs_entryBox.insert(0, "HRS")
-        hrs_entryBox.config(foreground='gray')
-
-def putMins(event):
-    if mins_entryBox.get().isnumeric():
-        pass
-    else:
-        mins_entryBox.insert(0, "MINS")
-        mins_entryBox.config(foreground='gray')
-
-def putSecs(event):
-    if secs_entryBox.get().isnumeric():
-        pass
-    else:
-        secs_entryBox.insert(0, "SECS")
-        secs_entryBox.config(foreground='gray')
-
+#put placeholders (when out of focus)
 hrs_entryBox.bind("<FocusOut>", putHrs)
 mins_entryBox.bind("<FocusOut>", putMins)
 secs_entryBox.bind("<FocusOut>", putSecs)
