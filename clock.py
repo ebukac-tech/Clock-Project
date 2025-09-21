@@ -1,3 +1,6 @@
+#messed up when trying stuff
+
+
 from tkinter import *
 from tkinter import ttk
 #from datetime import date

@@ -1,4 +1,4 @@
-#time.after() was too slow to be accurate
+#using time.time()
 import time
 from tkinter import *
 from tkinter import ttk
@@ -8,8 +8,10 @@ from tkinter import ttk
 #------------------------------------------
 
 #start button, stop button
-def startTimer(totSecs=None):
-    global bruh, totSecsContinue
+def startTimer():
+    global duration, start_time, running
+    running = True
+    global duration, start_time
     # display the necessary widgets
     hrs_entryBox.place_forget()
     label1.place_forget()
@@ -17,6 +19,9 @@ def startTimer(totSecs=None):
     label2.place_forget()
     secs_entryBox.place_forget()
     timerLabel.place(relx=0.5, rely=0.4, anchor='center')
+    start_timerbtn.config(text="STOP", command=stop)
+    start_timerbtn.place(relx=0.3, rely=0.7, anchor="center")
+    reset_timerbtn.place(relx=0.7, rely=0.7, anchor="center")
     #get values
     if hrs_entryBox.get().isnumeric():
         hrs_value = int(hrs_entryBox.get())
@@ -32,38 +37,55 @@ def startTimer(totSecs=None):
         secs_value=0
 
     #countdown
-    if totSecs == None:
-        print("Timer has started")
-        totSecs = (hrs_value*60*60 + mins_value*60 + secs_value)
-        display_mins, display_secs = divmod(totSecs, 60)
+    duration = hrs_value*3600 + mins_value*60 + secs_value
+    start_time = time.time()  # <-- records start_time only once, here! after button is pressed
+    updateTimer() 
+
+def updateTimer():
+    global bruh, totSecsContinue
+    elapsed_time = time.time() - start_time
+    totSecsRemaining = int(duration - elapsed_time)
+    totSecsContinue = totSecsRemaining
+
+    if totSecsRemaining >= 0:
+        display_mins, display_secs = divmod(totSecsRemaining, 60)
         display_hrs, display_mins = divmod(display_mins, 60)
-
-        timerLabel.config(text="{:02d}:{:02d}:{:02d}".format(display_hrs, display_mins, display_secs))
-        timer.after(1000, startTimer, totSecs-1)
-
-    elif totSecs != -1:
-        display_mins, display_secs = divmod(totSecs, 60)
-        display_hrs, display_mins = divmod(display_mins, 60)
-
-        timerLabel.config(text="{:02d}:{:02d}:{:02d}".format(display_hrs, display_mins, display_secs))
-        bruh = timer.after(1000, startTimer, totSecs-1)
+        timerLabel.config(
+            text=f"{display_hrs:02d}:{display_mins:02d}:{display_secs:02d}"
+        )
+        bruh = timer.after(200, updateTimer)  # schedule another update
     else:
-        print("Time is up")
-
-    totSecsContinue = totSecs
-    start_timerbtn.config(text="STOP", command=stop)
-    
+        pass
+          
 
 
 def stop():
     print("Timer has stopped")
+    global running
+    running = False
     timer.after_cancel(bruh)
     start_timerbtn.config(text="CONTINUE", command=continue_timer)
 
 def continue_timer():
-    print("Timer has continued")
-    startTimer(totSecsContinue)
+    global start_time, running
+    # set start_time so remaining seconds continue correctly
+    start_time = time.time() - (duration - totSecsContinue)
+    running = True
+    updateTimer()
     start_timerbtn.config(text="STOP", command=stop)
+    reset_timerbtn.place(relx=0.7, rely=0.7, anchor="center")
+
+def resetTimer():
+    hrs_entryBox.place(relx=0.2, rely=0.4, anchor="center")
+    label1.place(relx=0.35, rely=0.4, anchor="center")
+    mins_entryBox.place(relx=0.5, rely=0.4, anchor="center")
+    label2.place(relx=0.65, rely=0.4, anchor="center")
+    secs_entryBox.place(relx=0.8, rely=0.4, anchor="center")
+    timerLabel.place_forget()
+    timer.after_cancel(bruh)
+    start_timerbtn.place(relx=0.5, rely=0.7, anchor="center")
+    reset_timerbtn.place_forget()
+    start_timerbtn.config(text="START", command=startTimer)
 
 
 #re-insert placeholders of entry box when out of focus
@@ -118,7 +140,8 @@ root.title("Ebuka's Clock")
 window_height = 250
 window_width = 370
 root.geometry(f"{window_width}x{window_height}")
-root.resizable(False, False)
+#root.resizable(False, False)
+root.configure(bg="#171717")
 
 notebook = ttk.Notebook(root)
 # for darkmode
@@ -128,7 +151,7 @@ style.theme_use("clam")  # "clam" allows custom colors
 style.configure("Black.TFrame", background="#171717")
 style.configure("Black.TLabel", background="#171717", foreground="#E8DEDC")
 style.configure("Black.TButton", background="#171717", foreground="#E8DEDC")
-style.configure("Black.TEntry", fieldbackground="#171717", foreground="white")
+style.configure("Black.TEntry", fieldbackground="#171717", foreground="white", insertbackground="white")
 style.configure("white.TButton", background = '#A6A09B', foreground = 'black')
 
 #make frames
@@ -145,24 +168,24 @@ notebook.add(localTime, text="           Local time                ")
 #-----------------------------------------
 
 #display - timer
-timerLabel = ttk.Label(timer, text="00:00:00", font=('Arial', 40), style="Black.TLabel")
+timerLabel = ttk.Label(timer, text="00:00:00", font=('Courier', 40), style="Black.TLabel")
 
 #entry boxes
-hrs_entryBox = ttk.Entry(timer, foreground="gray", font=("Arial", 20), width=5, style="Black.TEntry")
+hrs_entryBox = ttk.Entry(timer, foreground="gray", font=("Courier", 20), width=3, style="Black.TEntry")
 hrs_entryBox.place(relx=0.2, rely=0.4, anchor="center")
 hrs_entryBox.insert(0, "HRS")
 
-label1 = ttk.Label(timer, text=":", font=("Arial", 15), style="Black.TLabel")
+label1 = ttk.Label(timer, text=":", font=("Courier", 15), style="Black.TLabel")
 label1.place(relx=0.35, rely=0.4, anchor="center")
 
-mins_entryBox = ttk.Entry(timer, foreground="gray", font=("Arial", 20), width=5, style="Black.TEntry")
+mins_entryBox = ttk.Entry(timer, foreground="gray", font=("Courier", 20), width=4, style="Black.TEntry")
 mins_entryBox.place(relx=0.5, rely=0.4, anchor="center")
 mins_entryBox.insert(0, "MINS")
 
-label2 = ttk.Label(timer, text=":", font=("Arial", 15), style="Black.TLabel")
+label2 = ttk.Label(timer, text=":", font=("Courier", 15), style="Black.TLabel")
 label2.place(relx=0.65, rely=0.4, anchor="center")
 
-secs_entryBox = ttk.Entry(timer, foreground="gray", font=("Arial", 20), width=5, style="Black.TEntry")
+secs_entryBox = ttk.Entry(timer, foreground="gray", font=("Courier", 20), width=4, style="Black.TEntry")
 secs_entryBox.place(relx=0.8, rely=0.4, anchor="center")
 secs_entryBox.insert(0, "SECS")
 
@@ -180,8 +203,14 @@ secs_entryBox.bind("<FocusOut>", putSecs)
 start_timerbtn = ttk.Button(timer, text="START", command=startTimer, style="Black.TButton")
 start_timerbtn.place(relx=0.5, rely=0.7, anchor="center")
 
+reset_timerbtn = ttk.Button(timer, text="RESET", command=resetTimer, style="Black.TButton")
+
 start_timerbtn.bind("<Enter>", lambda event: start_timerbtn.config(style="white.TButton"))
 start_timerbtn.bind("<Leave>", lambda event: start_timerbtn.config(style="Black.TButton"))
+
+reset_timerbtn.bind("<Enter>", lambda event: reset_timerbtn.config(style="white.TButton"))
+reset_timerbtn.bind("<Leave>", lambda event: reset_timerbtn.config(style="Black.TButton"))
+
 
 notebook.pack()
 
